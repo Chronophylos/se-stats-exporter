@@ -1,0 +1,19 @@
+wss://twitchstats-ws.streamelements.com/
+{"command":"subscribe","data":{"room":"twitchstats:<channel>:stats"}}
+it seems like you get every chatter ??
+get every chatter
+    wscat --connect wss://twitchstats-ws.streamelements.com/ -w 10 -x '{"command":"subscribe","data":{"room":"twitchstats:global:stats"}}' | jq '.data[][] | if .type == "chatters" then .key else empty end' | tr -d '"' | sort -f | uniq -c | sort -n
+
+GET https://api.streamelements.com/kappa/v2/chatstats/?limit=<limit>
+parameter
+    limit
+        max value 100
+        default 100
+get channels with most messages
+
+GET https://api.streamelements.com/kappa/v2/chatstats/<channel>/stats?limit=<limit>
+parameter
+    limit
+        max value 100
+        default 100
+get various stats
