@@ -1,14 +1,14 @@
 #![warn(missing_copy_implementations, missing_debug_implementations)]
 
+use anyhow::Result;
+use metrics::{counter, gauge, register_counter, register_gauge};
+use metrics_exporter_prometheus::PrometheusBuilder;
 use std::{
     net::{IpAddr, Ipv4Addr, SocketAddr},
     time::Duration,
 };
-
-use anyhow::Result;
-use metrics::{counter, gauge, register_counter, register_gauge};
-use metrics_exporter_prometheus::PrometheusBuilder;
 use tokio::time;
+use tracing::error;
 
 mod stats_api;
 // mod stats_ws;
@@ -30,11 +30,16 @@ async fn main() -> Result<()> {
     loop {
         interval.tick().await;
 
-        println!("Getting new stats from se");
-        let stats = client.get_stats("global").await?;
+        let stats = match client.get_stats("global").await {
+            Err(e) => {
+                error!("Could not get stats from stats.streamelements.com");
+                continue;
+            }
+            Ok(s) => s,
+        };
         let bttv_emotes = stats.bttv_emotes.to_vec();
 
-        println!("Exporting stats to Prometheus");
+        debug!("Exporting stats to Prometheus");
 
         for emote in bttv_emotes.iter() {
             gauge!(
