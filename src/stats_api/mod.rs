@@ -118,7 +118,7 @@ impl ApiClient {
         Ok(ApiClient { client })
     }
 
-    pub async fn get_top_channels<'a>(&self) -> Result<Vec<Channel<'a>>, Error> {
+    pub async fn get_top_channels<'a>(&self) -> Result<Cow<'a, [Channel<'a>]>, Error> {
         const URL: &str = "https://api.streamelements.com/kappa/v2/chatstats";
 
         let channels = self
