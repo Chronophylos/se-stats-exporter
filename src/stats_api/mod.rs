@@ -56,7 +56,7 @@ pub struct Emote<'a> {
     pub gif: bool,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(rename = "lowercase")]
 pub enum EmoteType {
     BTTV,
