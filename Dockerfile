@@ -1,15 +1,17 @@
-FROM rust:1.50 as build
+FROM rust:1.52 as builder
 
 WORKDIR /sse
 
 COPY . .
 
-RUN cargo build --release --bin se-stats-exporter
+RUN cargo install -v --bin se-stats-exporter --path .
 
-ENTRYPOINT ["/sse/target/release/se-stats-exporter"]
+FROM debian:buster-slim
 
-#FROM scratch
-#
-#COPY --from=build /sse/target/release/se-stats-exporter /bin/se-stats-exporter
-#
-#ENTRYPOINT ["/bin/se-stats-exporter"]
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
+EXPOSE 9001/tcp
+
+COPY --from=builder /usr/local/cargo/bin/se-stats-exporter /bin/se-stats-exporter
+
+ENTRYPOINT ["/bin/se-stats-exporter"]
