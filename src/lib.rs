@@ -1,7 +1,7 @@
 #![warn(missing_copy_implementations, missing_debug_implementations)]
 
 use clap::arg_enum;
-use metrics::{gauge, IntoLabels};
+use metrics::{gauge, IntoLabels, Label};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use stats_api::{ApiClient, ChatterStats};
 use tracing::{debug, error, instrument};
@@ -124,7 +124,7 @@ pub async fn export_stats(config: &ExportConfig, client: &ApiClient) {
             "sestats.chatter",
             stats.chatters.to_vec(),
             |chatter: &ChatterStats| chatter.amount as f64,
-            |chatter: &ChatterStats| &[("name", chatter.name.to_string())],
+            |chatter: &ChatterStats| vec![Label::new("name", chatter.name.to_string())],
         )
     }
 

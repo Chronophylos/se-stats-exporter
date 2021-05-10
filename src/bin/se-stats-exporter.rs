@@ -15,15 +15,17 @@ fn get_matches() -> ArgMatches<'static> {
                 .takes_value(true)
                 .possible_values(&ExportName::variants())
                 .use_delimiter(true)
-                .default_value("bttv,ffz,twitch,channel,chatter")
+                .default_value(
+                    option_env!("SESTATS_EXPORT").unwrap_or("bttv,ffz,twitch,channel,chatter"),
+                )
                 .case_insensitive(true),
         )
         .arg(
             Arg::with_name("address")
                 .long("address")
                 .short("a")
-                .help("Set the address for the prometheus scape endpoint")
-                .default_value("127.0.0.1:9001"),
+                .help("Set the address for the prometheus scrape endpoint")
+                .default_value(option_env!("SESTATS_ADDRESS").unwrap_or("127.0.0.1:9001")),
         )
         .arg(
             Arg::with_name("interval")
@@ -31,7 +33,7 @@ fn get_matches() -> ArgMatches<'static> {
                 .short("i")
                 .help("Export interval in seconds")
                 .long_help("How often the scape endpoint should get updated")
-                .default_value("10"),
+                .default_value(option_env!("SESTATS_INTERVAL").unwrap_or("10")),
         )
         .get_matches()
 }
